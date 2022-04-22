@@ -7,5 +7,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [A, B] = generate_system(Ac, Bc, params)
-    % YOUR CODE HERE
+    Ts = 600;
+    sysc = ss(Ac,Bc,zeros(size(Ac)),zeros(size(Bc)));
+    sysd = c2d(sysc,Ts,'zoh');
+    A = sysd.A;
+    B = sysd.B;
 end

@@ -7,5 +7,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [H_u, h_u, H_x, h_x] = generate_constraints(params)
-    % YOUR CODE HERE
+    smax = params.constraints.MaxAbsPositionXZ;
+    ymax = params.constraints.MaxAbsPositionY;
+    umax = params.constraints.MaxAbsThrust;
+
+    h_x = [smax ymax smax smax ymax smax]';
+    h_u = [umax umax umax umax umax umax]';
+
+    H_x = [1 0 0 0 0 0;
+           0 1 0 0 0 0;
+           0 0 1 0 0 0;
+           -1 0 0 0 0 0;
+           0 -1 0 0 0 0;
+           0 0 -1 0 0 0];
+
+    H_u = [1 0 0;
+           0 1 0;
+           0 0 1;
+           -1 0 0;
+           0 -1 0;
+           0 0 -1];
 end

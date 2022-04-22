@@ -16,11 +16,12 @@ classdef LQR
         function obj = LQR(Q,R,params)
             % YOUR CODE HERE
             % obj.K = ... (save feedback matrix for use in eval function)
+            obj.K = dlqr(params.model.A, params.model.B, Q, R);
         end
         
         function [u, u_info] = eval(obj,x)
             % YOUR CODE HERE
-            % u = ...
+            u = -obj.K*x; % Negative feedback
             u_info = struct('ctrl_feas',true);
         end
     end
