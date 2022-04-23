@@ -16,5 +16,26 @@
 
 function [H, h] = lqr_maxPI(Q,R,params)
 	% YOUR CODE HERE
+    system = LTISystem('A',params.model.A,'B',params.model.B);
+
+    system.x.penalty = QuadFunction(Q);
+    system.u.penalty = QuadFunction(R);
+
+    % Specify bject functions
+    Px = Polyhedron('A',params.constraints.StateMatrix,'b',params.constraints.StateRHS);
+    Pu = Polyhedron('A',params.constraints.InputMatrix,'b',params.constraints.InputRHS);
+
+    % Specify constriant types (only polyhedra for now)
+    system.x.with('setConstraint');
+    system.u.with('setConstraint');
+
+    % Set constrints
+    system.x.setConstraint = Px;
+    system.u.setConstraint = Pu;
+
+    % Compute invariant set and get Polytopic form
+    InvSet = system.LQRSet();
+    H = InvSet.A;
+    h = InvSet.b;
 end
 
