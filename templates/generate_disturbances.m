@@ -7,5 +7,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function Wt = generate_disturbances(params)
-    % YOUR CODE HERE
+    Pw = Polyhedron('A',params.constraints.DisturbanceMatrix,'b',params.constraints.DisturbanceRHS);
+    Nt = params.model.HorizonLength;
+    Wt = zeros(params.model.nx,Nt);
+    for i=1:Nt
+        Wt(:,i) = Pw.randomPoint();
+    end
 end

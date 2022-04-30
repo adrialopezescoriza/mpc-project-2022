@@ -7,5 +7,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [Xt,Ut,u_info] = simulate_uncertain(x0, ctrl, Wt, params)
-	% YOUR CODE HERE
+	Nt = params.model.HorizonLength;
+    Xt = zeros(params.model.nx,Nt);
+    Xt(:,1) = x0;
+    Ut = zeros(params.model.nu,Nt);
+    for i=1:Nt
+        [Ut(:,i),u_info(i)] = ctrl.eval(Xt(:,i));
+        Xt(:,i+1) = params.model.A*Xt(:,i) + params.model.B*Ut(:,i) + Wt(:,i);
+    end
 end

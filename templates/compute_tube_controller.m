@@ -7,5 +7,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function K_tube = compute_tube_controller(p,params)
-	% YOUR CODE HERE
+	K_tube = -place(params.model.A,params.model.B,p);
 end
