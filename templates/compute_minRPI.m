@@ -11,7 +11,7 @@ function [H_tube,h_tube,n_iter] = compute_minRPI(K_tube,params)
     sys = LTISystem('A',params.model.A+params.model.B*K_tube);
     n_iter = 0;
 
-    % Constrin polyhedrons
+    % Constrain polyhedrons
     Px = Polyhedron('A',params.constraints.StateMatrix,'b',params.constraints.StateRHS);
     Pu_x = Polyhedron('A',params.constraints.InputMatrix*(K_tube),'b',params.constraints.InputRHS);
     Px = intersect(Px,Pu_x);
