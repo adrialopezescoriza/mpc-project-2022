@@ -39,7 +39,7 @@ classdef MPC_TS
 
             objective = objective + x'*P_lqr*x;
             % Belongs to feasible set
-            constraints = [constraints, H*x <= h];
+            constraints = [constraints, H_x*x <= h_x, H*x <= h];
 
             opts = sdpsettings('verbose',1,'solver','quadprog');
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{U{1} objective});

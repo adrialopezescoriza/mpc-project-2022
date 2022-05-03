@@ -38,6 +38,7 @@ classdef MPC
             end
 
             objective = objective + x'*P_lqr*x;
+            constraints = [constraints, H_x*x <= h_x];
 
             opts = sdpsettings('verbose',1,'solver','quadprog');
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{U{1} objective});

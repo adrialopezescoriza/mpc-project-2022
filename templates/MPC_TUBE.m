@@ -16,7 +16,35 @@ classdef MPC_TUBE
         function obj = MPC_TUBE(Q,R,N,H_N,h_N,H_tube,h_tube,K_tube,params)
             obj.K_tube = K_tube;
 
-            % YOUR CODE HERE
+            nu = params.model.nu;
+            nx = params.model.nx;
+
+            % define constraints
+            H_z = params.constraints.StateMatrix;
+            H_v = params.constraints.InputMatrix;
+            h_z = params.constraints.StateRHS;
+            h_v = params.constraints.InputRHS;
+
+            % define optimization variables
+            V = sdpvar(repmat(nu,1,N),ones(1,N),'full');
+            Z = sdpvar(repmat(nx,1,N),ones(1,N),'full');
+            X0 = sdpvar(nx,1,'full');
+
+            [~,P_lqr] = dlqr(params.model.A, params.model.B, Q, R);
+
+            % Constrin for initial condition
+            constraints = [H_tube*(Z{1}-X0) <= h_tube];
+            objective = 0;
+
+            for i=1:N
+                objective = objective + traj_cost(Z{i},V{i},Q,R);
+                constraints = [constraints, H_z*Z{i} <= h_z, H_v*V{i} <= h_v];
+                Z{i+1} = params.model.A*Z{i} + params.model.B*V{i};
+            end
+
+            objective = objective + Z{N+1}'*P_lqr*Z{N+1};
+            % Belongs to feasible set
+            constraints = [constraints, H_N*Z{N+1} <= h_N, H_z*Z{N+1} <= h_z];
 
             opts = sdpsettings('verbose',1,'solver','quadprog');
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{V{1} Z{1} objective});
@@ -27,7 +55,9 @@ classdef MPC_TUBE
             tic;
             [optimizer_out,errorcode] = obj.yalmip_optimizer(x);
             solvetime = toc;
-            % YOUR CODE HERE
+
+            [v, z, objective] = optimizer_out{:};
+            u = v + obj.K_tube*(x-z);
             
             feasible = true;
             if (errorcode ~= 0)
