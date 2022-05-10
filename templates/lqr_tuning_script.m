@@ -1,3 +1,5 @@
+clear;
+clc;
 % LQR tuning script
 
 % Get params and initial condition
@@ -26,6 +28,8 @@ J_opt = tuning_struct(i_opt).InputCost;
 if J_opt < 11
     q_opt = tuning_struct(i_opt).Qdiag;
 end
+
+save('templates/lqr_tuning_script',"q_opt");
 
 
 function combs = nmultichoosek(values, k)

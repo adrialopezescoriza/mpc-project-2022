@@ -18,6 +18,7 @@ classdef MPC_TS
 
             % define optimization variables
             U = sdpvar(repmat(nu,1,N),ones(1,N),'full');
+            X = sdpvar(repmat(nx,1,N+1),ones(1,N+1),'full');
             X0 = sdpvar(nx,1,'full');
 
             % define constraints
@@ -30,16 +31,16 @@ classdef MPC_TS
 
             constraints = [];
             objective = 0;
-            x = X0;
+            X{1} = X0;
             for i=1:N
-                objective = objective + traj_cost(x,U{i},Q,R);
-                constraints = [constraints, H_x*x <= h_x, H_u*U{i} <= h_u];
-                x = params.model.A*x + params.model.B*U{i};        
+                objective = objective + traj_cost(X{i},U{i},Q,R);
+                constraints = [constraints, H_x*X{i} <= h_x, H_u*U{i} <= h_u];
+                constraints = [constraints, X{i+1} == params.model.A*X{i} + params.model.B*U{i}];       
             end
 
-            objective = objective + x'*P_lqr*x;
+            objective = objective + X{N+1}'*P_lqr*X{N+1};
             % Belongs to feasible set
-            constraints = [constraints, H_x*x <= h_x, H*x <= h];
+            constraints = [constraints, H_x*X{N+1} <= h_x, H*X{N+1} <= h];
 
             opts = sdpsettings('verbose',1,'solver','quadprog');
             obj.yalmip_optimizer = optimizer(constraints,objective,opts,X0,{U{1} objective});
