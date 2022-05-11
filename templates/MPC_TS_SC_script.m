@@ -7,10 +7,10 @@ N = params.model.HorizonLength;
 x0 = params.model.InitialConditionA;
 [H,h] = lqr_maxPI(Q,R,params);
 
-% Define penalty function parameters
+% Define penalty function parameters based on theory
 s = 100;
 S = eye(params.model.nx)*s;
-v = 1e6;
+v = 1e7;
 
 save('templates/MPS_TS_SC_params','S','v');
 

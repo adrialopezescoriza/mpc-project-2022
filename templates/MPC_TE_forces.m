@@ -55,7 +55,7 @@ classdef MPC_TE_forces
             solvetime = info.solvetime;
 
             feasible = true;
-            if (errorcode ~= 1)
+            if any(errorcode ~= 1)
                 feasible = false;
                 warning('MPC infeasible');
             end

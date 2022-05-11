@@ -19,19 +19,18 @@ function [H_tube,h_tube,n_iter] = compute_minRPI(K_tube,params)
     Pw = Polyhedron('A',params.constraints.DisturbanceMatrix,'b',params.constraints.DisturbanceRHS);
 
     % Initialize invariant set
-    R = Px;
+    R = minus(Px,Px); % Empty initialization
     R_prev = R;
 
     while(true)
-        preR = sys.reachableSet('X',minus(R,Pw),'direction','backward'); % Compute preset
-        R = intersect(R,preR); % Intersect set and preset
+        R = plus(R_prev,((params.model.A+params.model.B*K_tube)^n_iter)*Pw);
         if (eq(R.minHRep(),R_prev.minHRep))
             break;
         end
         R_prev = R;
         n_iter = n_iter + 1;
     end
-
+    
     H_tube = R.A;
     h_tube = R.b;
 end
